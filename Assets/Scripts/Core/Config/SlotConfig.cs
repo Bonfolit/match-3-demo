@@ -10,6 +10,13 @@ namespace Core.Config
         public Sprite Sprite;
         public Vector3 Scale;
         public Vector2 Offset;
+
+        public SlotConfig Bind()
+        {
+            DI.Bind(this);
+
+            return this;
+        }
     }
 
 }
