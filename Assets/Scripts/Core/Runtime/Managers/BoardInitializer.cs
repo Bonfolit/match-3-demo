@@ -14,6 +14,9 @@ namespace Core.Runtime.Managers
     public class BoardInitializer : Manager<BoardInitializer>,
         IEventHandler<InitializeBoardEvent>
     {
+        private static int MAIN_TEX_ID = Shader.PropertyToID("_MainTex");
+        private static int STENCIL_REF_ID = Shader.PropertyToID("_StencilRef");
+
         private SlotConfig m_config;
         public SlotConfig Config => m_config ??= Resources.Load<SlotConfig>("Config/SlotConfig").Bind();
 
@@ -27,6 +30,8 @@ namespace Core.Runtime.Managers
         private GraphicHandle[] m_slotGraphicHandles;
 
         private Vector2Int m_boardDimensions;
+
+        private MaterialPropertyBlock m_mpb;
 
         public override void ResolveDependencies()
         {
@@ -47,9 +52,20 @@ namespace Core.Runtime.Managers
         public void OnEventReceived(ref InitializeBoardEvent evt)
         {
             m_boardDimensions = evt.Dimensions;
-            
+
+            m_mpb = new MaterialPropertyBlock();
+            // m_mpb.SetTexture(MAIN_TEX_ID, Config.Texture);
+
             DrawSlots(in m_boardDimensions);
             DrawItems();
+
+            var totalArea = new Vector3(
+                (m_boardDimensions.x - 1) * Config.Offset.x + Config.Scale.x, 
+                (m_boardDimensions.y - 1) * Config.Offset.y + Config.Scale.y, 
+                0f);
+            
+            var setPlayableAreaEvt = new SetPlayableAreaEvent(totalArea);
+            EventManager.SendEvent(ref setPlayableAreaEvt);
         }
 
         private void DrawSlots(in Vector2Int dimensions)
@@ -72,10 +88,8 @@ namespace Core.Runtime.Managers
                     m_slotGraphicHandles[index] = m_graphicManager.CreateHandle(rentedSlotPoolObj);
 
                     var poolObjTransform = rentedSlotPoolObj.transform;
-                    var rend = ((SpriteRenderer)rentedSlotPoolObj.CustomReference);
-                    
-                    rend.sprite = Config.Sprite;
-                    rend.sortingOrder = -1;
+                    var rend = ((MeshRenderer)rentedSlotPoolObj.CustomReference);
+                    // rend.SetPropertyBlock(m_mpb);
                     
                     poolObjTransform.position = pos;
                     poolObjTransform.localScale = Config.Scale;
@@ -108,8 +122,7 @@ namespace Core.Runtime.Managers
 
                     var graphic = m_graphicManager.GetItemGraphic(in item);
                     var poolObj = ((PoolObject)graphic.Target);
-                    var rend = ((SpriteRenderer)poolObj.CustomReference);
-                    rend.transform.position = pos;
+                    poolObj.transform.position = pos;
                 }
             }
         }

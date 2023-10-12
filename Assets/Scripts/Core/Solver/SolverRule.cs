@@ -1,4 +1,4 @@
-﻿namespace Core.Solvers
+﻿namespace Core.Solver
 {
     [System.Serializable]
     public struct SolverRule

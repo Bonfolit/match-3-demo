@@ -1,31 +1,31 @@
-﻿Shader "Unlit/Item"
+﻿Shader "Unlit/Background"
 {
     Properties
     {
-        [PerRendererData]_MainTex ("Texture", 2D) = "white" {}
+        _MainTex ("Texture", 2D) = "white" {}
     }
     SubShader
     {
         Tags
         {
-            "RenderType"="Geometry"
-            "Queue"="Geometry"
+            "RenderType"="Transparent"
+            "Queue"="Transparent"
         }
         
         Blend SrcAlpha OneMinusSrcAlpha
-        ZTest Off
-        ZWrite Off
-        
+        ColorMask 0
+//        ZWrite Off
+//        ZTest Off
+
         Stencil
         {
             Ref 1
-            Comp lequal
+            Comp always
             Pass replace
         }
         
         Pass
         {
-            
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag

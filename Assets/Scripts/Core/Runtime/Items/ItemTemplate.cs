@@ -8,7 +8,7 @@ namespace Core.Runtime.Items
     {
         [HideInInspector]
         public int Id;
-        public Sprite Sprite;
+        public Texture Texture;
         public PoolObject RendererPoolObject;
     }
 

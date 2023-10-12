@@ -1,4 +1,4 @@
-﻿namespace Core.Runtime.Board
+﻿namespace Core.Solver
 {
 
     public struct BoardState

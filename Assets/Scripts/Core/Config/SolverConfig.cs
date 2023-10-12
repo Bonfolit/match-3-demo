@@ -1,4 +1,4 @@
-﻿using Core.Solvers;
+﻿using Core.Solver;
 using UnityEngine;
 
 namespace Core.Config

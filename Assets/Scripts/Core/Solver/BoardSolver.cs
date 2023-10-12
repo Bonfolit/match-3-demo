@@ -1,8 +1,7 @@
 ﻿using Core.Config;
-using Core.Runtime.Board;
 using UnityEngine;
 
-namespace Core.Solvers
+namespace Core.Solver
 {
 
     public static class BoardSolver
@@ -28,17 +27,6 @@ namespace Core.Solvers
             }
 
             return boardState;
-        }
-        public static void Solve(this BoardState state, in int[] templateIds)
-        {
-            var count = state.Height * state.Width;
-
-            state.Ids = new int[count];
-
-            for (int i = 0; i < count; i++)
-            {
-                state.Ids[i] = templateIds[Random.Range(0, templateIds.Length)];
-            }
         }
     }
 

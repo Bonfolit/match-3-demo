@@ -1,10 +1,9 @@
 ﻿using BonLib.DependencyInjection;
 using BonLib.Managers;
 using Core.Config;
-using Core.Runtime.Board;
 using Core.Runtime.Events.Gameplay;
 using Core.Runtime.Items;
-using Core.Solvers;
+using Core.Solver;
 using UnityEngine;
 
 namespace Core.Runtime.Managers
