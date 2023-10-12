@@ -80,7 +80,7 @@ namespace Core.Runtime.Managers
             {
                 for (int j = 0; j < dimensions.y; j++)
                 {
-                    var index = j * dimensions.y + i;
+                    var index = j * dimensions.x + i;
                     
                     pos = -drawOffset + new Vector3(i * Config.Offset.x, j * Config.Offset.y, 0f);
                     
