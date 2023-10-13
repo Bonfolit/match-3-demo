@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: BoardConfig
   m_EditorClassIdentifier: 
   Dimensions: {x: 8, y: 8}
+  Offset: {x: 2.7, y: 2.7}

@@ -29,6 +29,7 @@ namespace Core.Runtime.Managers
 
         private GraphicManager m_graphicManager;
         private BoardManager m_boardManager;
+        private SlotManager m_slotManager;
 
         public override void ResolveDependencies()
         {
@@ -36,6 +37,7 @@ namespace Core.Runtime.Managers
 
             m_graphicManager = DI.Resolve<GraphicManager>();
             m_boardManager = DI.Resolve<BoardManager>();
+            m_slotManager = DI.Resolve<SlotManager>();
         }
 
         public override void PreInitialize()
@@ -95,6 +97,12 @@ namespace Core.Runtime.Managers
             return item;
         }
 
+        public void DestroyItem(in Item item)
+        {
+            m_graphicManager.DestroyItemGraphic(in item);
+            m_itemMap.Remove(item.Id);
+        }
+
         public ItemTemplate GetItemTemplate(int templateId)
         {
             return m_itemTemplateMap[templateId];
@@ -106,9 +114,10 @@ namespace Core.Runtime.Managers
 
             var boardState = m_boardManager.GenerateNewBoardState(in templateIds);
             
+            var unitOffset = m_boardManager.PlacementOffset;
             var drawOffset = new Vector3(
-                ((float)(boardState.Width - 1) / 2f) * Config.Offset.x, 
-                ((float)(boardState.Height - 1) / 2f) * Config.Offset.y, 
+                -((float)(boardState.Width - 1) / 2f) * unitOffset.x, 
+                -((float)(boardState.Height - 1) / 2f) * unitOffset.y, 
                 0f);
             
             Vector3 pos;
@@ -119,9 +128,12 @@ namespace Core.Runtime.Managers
                 {
                     var index = j * boardState.Width + i;
                     
-                    pos = -drawOffset + new Vector3(i * Config.Offset.x, j * Config.Offset.y, 0f);
+                    pos = m_boardManager.GetWorldPosition(index);
 
                     var item = CreateItem(boardState.Ids[index]);
+                    var slot = m_slotManager.GetSlot(index);
+                    
+                    item.SetAddress(in slot);
 
                     var graphic = m_graphicManager.GetItemGraphic(in item);
                     var poolObj = ((PoolObject)graphic.Target);

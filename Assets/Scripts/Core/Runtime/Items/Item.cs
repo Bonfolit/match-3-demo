@@ -9,13 +9,11 @@ namespace Core.Runtime.Items
     public struct Item : IEquatable<Item>
     {
         private ItemAddress m_address;
-        private GraphicHandle m_graphicHandle;
+        public GraphicHandle GraphicHandle;
         
         public int Id { get; }
         public int TemplateId { get; }
         public ItemAddress Address => m_address;
-        public GraphicHandle GraphicHandle => m_graphicHandle;
-
         public Item(int id, int templateId)
         {
             Id = id;
@@ -25,7 +23,7 @@ namespace Core.Runtime.Items
                 Slot = new Slot(-1, default)
             };
 
-            m_graphicHandle = default;
+            GraphicHandle = default;
         }
 
         public void SetAddress(in Slot slot)
@@ -35,7 +33,7 @@ namespace Core.Runtime.Items
 
         public void SetGraphicHandle(GraphicHandle handle)
         {
-            m_graphicHandle = handle;
+            GraphicHandle = handle;
         }
 
         public bool Equals(Item other)

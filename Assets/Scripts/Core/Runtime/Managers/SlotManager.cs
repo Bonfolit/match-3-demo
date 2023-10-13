@@ -16,7 +16,7 @@ namespace Core.Runtime.Managers
         private static int STENCIL_REF_ID = Shader.PropertyToID("_StencilRef");
         
         private SlotConfig m_config;
-        public SlotConfig Config => m_config ??= Resources.Load<SlotConfig>("Config/SlotConfig").Bind();
+        public SlotConfig Config => m_config ??= Resources.Load<SlotConfig>("Config/SlotConfig");
         
         [SerializeField]
         private PoolObject m_slotPoolObject;
@@ -24,17 +24,23 @@ namespace Core.Runtime.Managers
         private Slot[] m_slots;
         
         private GraphicManager m_graphicManager;
+        private BoardManager m_boardManager;
 
         public override void ResolveDependencies()
         {
             base.ResolveDependencies();
 
             m_graphicManager = DI.Resolve<GraphicManager>();
+            m_boardManager = DI.Resolve<BoardManager>();
         }
 
         public void InitializeSlots(in Vector2Int dimensions)
         {
-            var drawOffset = new Vector3(((float)(dimensions.x - 1) / 2f) * Config.Offset.x, ((float)(dimensions.y - 1) / 2f) * Config.Offset.y, 0f);
+            var unitOffset = m_boardManager.PlacementOffset;
+            var drawOffset = new Vector3(
+                -((float)(dimensions.x - 1) / 2f) * unitOffset.x, 
+                -((float)(dimensions.y - 1) / 2f) * unitOffset.y, 
+                0f);
 
             Vector3 pos;
 
@@ -47,7 +53,7 @@ namespace Core.Runtime.Managers
                 {
                     var index = j * dimensions.x + i;
                     
-                    pos = -drawOffset + new Vector3(i * Config.Offset.x, j * Config.Offset.y, 0f);
+                    pos = m_boardManager.GetWorldPosition(index);
                     
                     var rentedSlotPoolObj = PrefabPool.Rent(m_slotPoolObject);
                     var handle = m_graphicManager.CreateHandle(rentedSlotPoolObj);
@@ -62,6 +68,11 @@ namespace Core.Runtime.Managers
                     poolObjTransform.localScale = Config.Scale;
                 }
             }
+        }
+
+        public Slot GetSlot(int index)
+        {
+            return m_slots[index];
         }
 
         [Button]

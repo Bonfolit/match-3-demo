@@ -77,7 +77,7 @@ namespace Core.Solver
 
                     if (scanId != currentId)
                     {
-                        if (count >= 3)
+                        if (count >= 3 && scanId != -1)
                         {
                             var match = new MatchData(scanId, count);
 
@@ -99,7 +99,7 @@ namespace Core.Solver
                     }
                 }
 
-                if (count >= 3)
+                if (count >= 3 && scanId != -1)
                 {
                     var match = new MatchData(scanId, count);
 
@@ -125,7 +125,7 @@ namespace Core.Solver
 
                     if (scanId != currentId)
                     {
-                        if (count >= 3)
+                        if (count >= 3 && scanId != -1)
                         {
                             var match = new MatchData(scanId, count);
 
@@ -147,7 +147,7 @@ namespace Core.Solver
                     }
                 }
 
-                if (count >= 3)
+                if (count >= 3 && scanId != -1)
                 {
                     var match = new MatchData(scanId, count);
 

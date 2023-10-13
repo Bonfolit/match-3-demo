@@ -7,7 +7,6 @@ namespace Core.Config
     public class ItemConfig : ScriptableObject
     {
         public Vector3 Scale;
-        public Vector2 Offset;
     }
 
 }

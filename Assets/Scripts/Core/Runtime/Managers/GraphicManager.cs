@@ -100,6 +100,14 @@ namespace Core.Runtime.Managers
             
             return handle;
         }
+
+        public void DestroyItemGraphic(in Item item)
+        {
+            var poolObj = ((PoolObject)GetGraphic(in item.GraphicHandle).Target);
+            PrefabPool.Return(poolObj);
+            
+            DisposeHandle(in item.GraphicHandle);
+        }
     }
 
 }

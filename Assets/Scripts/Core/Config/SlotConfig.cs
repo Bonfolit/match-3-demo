@@ -9,14 +9,6 @@ namespace Core.Config
     {
         public Texture Texture;
         public Vector3 Scale;
-        public Vector2 Offset;
-
-        public SlotConfig Bind()
-        {
-            DI.Bind(this);
-
-            return this;
-        }
     }
 
 }

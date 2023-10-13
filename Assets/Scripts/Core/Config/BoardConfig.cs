@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using BonLib.DependencyInjection;
+using UnityEngine;
 
 namespace Core.Config
 {
@@ -6,7 +7,7 @@ namespace Core.Config
     public class BoardConfig : ScriptableObject
     {
         public Vector2Int Dimensions;
-        
+        public Vector2 Offset;
     }
 
 }
