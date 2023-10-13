@@ -1,28 +1,36 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using BonLib.Pooling;
 using Core.Runtime.Graphics;
+using Core.Runtime.Slots;
 
 namespace Core.Runtime.Items
 {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Item : IEquatable<Item>
     {
-        private int m_id;
-        private int m_templateId;
+        private ItemAddress m_address;
         private GraphicHandle m_graphicHandle;
         
-        public int Id => m_id;
-        public int TemplateId => m_templateId;
-
+        public int Id { get; }
+        public int TemplateId { get; }
+        public ItemAddress Address => m_address;
         public GraphicHandle GraphicHandle => m_graphicHandle;
 
         public Item(int id, int templateId)
         {
-            m_id = id;
-            m_templateId = templateId;
+            Id = id;
+            TemplateId = templateId;
+            m_address = new ItemAddress
+            {
+                Slot = new Slot(-1, default)
+            };
 
             m_graphicHandle = default;
+        }
+
+        public void SetAddress(in Slot slot)
+        {
+            m_address.Slot = slot;
         }
 
         public void SetGraphicHandle(GraphicHandle handle)
@@ -32,7 +40,7 @@ namespace Core.Runtime.Items
 
         public bool Equals(Item other)
         {
-            return m_id == other.m_id;
+            return Id == other.Id;
         }
 
         public override bool Equals(object obj)
@@ -42,7 +50,7 @@ namespace Core.Runtime.Items
 
         public override int GetHashCode()
         {
-            return m_id;
+            return Id;
         }
     }
 

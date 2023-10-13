@@ -67,7 +67,7 @@ namespace Core.Solver
             
             for (int i = 0; i < state.Width; i++)
             {
-                scanId = -1;
+                scanId = int.MinValue;
                 count = 0;
                 
                 for (int j = 0; j < state.Height; j++)
@@ -115,7 +115,7 @@ namespace Core.Solver
             
             for (int i = 0; i < state.Height; i++)
             {
-                scanId = -1;
+                scanId =  int.MinValue;
                 count = 0;
                 
                 for (int j = 0; j < state.Width; j++)
@@ -153,7 +153,6 @@ namespace Core.Solver
 
                     for (int j = 0; j < count; j++)
                     {
-                        // var fillIndex = i + (state.Height - 1 - j) * state.Width;
                         var fillIndex = i * state.Width + (state.Width - 1 - j);
                         match.Indices[j] = fillIndex;
                     }

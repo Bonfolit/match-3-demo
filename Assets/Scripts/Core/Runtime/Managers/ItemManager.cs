@@ -4,6 +4,7 @@ using BonLib.DependencyInjection;
 using BonLib.Events;
 using BonLib.Managers;
 using BonLib.Pooling;
+using Core.Config;
 using Core.Runtime.Events.Gameplay;
 using Core.Runtime.Items;
 using UnityEngine;
@@ -13,6 +14,13 @@ namespace Core.Runtime.Managers
 
     public class ItemManager : Manager<ItemManager>
     {
+        private static int MAIN_TEX_ID = Shader.PropertyToID("_MainTex");
+        private static int STENCIL_REF_ID = Shader.PropertyToID("_StencilRef");
+        
+        private ItemConfig m_config;
+        public ItemConfig Config =>
+            m_config ??= Resources.Load<ItemConfig>("Config/ItemConfig");
+        
         private Dictionary<int, ItemTemplate> m_itemTemplateMap;
 
         private Dictionary<int, Item> m_itemMap;
@@ -20,12 +28,14 @@ namespace Core.Runtime.Managers
         private ItemFactory m_factory;
 
         private GraphicManager m_graphicManager;
+        private BoardManager m_boardManager;
 
         public override void ResolveDependencies()
         {
             base.ResolveDependencies();
 
             m_graphicManager = DI.Resolve<GraphicManager>();
+            m_boardManager = DI.Resolve<BoardManager>();
         }
 
         public override void PreInitialize()
@@ -88,6 +98,38 @@ namespace Core.Runtime.Managers
         public ItemTemplate GetItemTemplate(int templateId)
         {
             return m_itemTemplateMap[templateId];
+        }
+
+        public void InitializeItems()
+        {
+            var templateIds = GetAllTemplateIDs();
+
+            var boardState = m_boardManager.GenerateNewBoardState(in templateIds);
+            
+            var drawOffset = new Vector3(
+                ((float)(boardState.Width - 1) / 2f) * Config.Offset.x, 
+                ((float)(boardState.Height - 1) / 2f) * Config.Offset.y, 
+                0f);
+            
+            Vector3 pos;
+
+            for (int i = 0; i < boardState.Width; i++)
+            {
+                for (int j = 0; j < boardState.Height; j++)
+                {
+                    var index = j * boardState.Width + i;
+                    
+                    pos = -drawOffset + new Vector3(i * Config.Offset.x, j * Config.Offset.y, 0f);
+
+                    var item = CreateItem(boardState.Ids[index]);
+
+                    var graphic = m_graphicManager.GetItemGraphic(in item);
+                    var poolObj = ((PoolObject)graphic.Target);
+                    var poolObjTransform = poolObj.transform;
+                    poolObjTransform.position = pos;
+                    poolObjTransform.localScale = Config.Scale;
+                }
+            }
         }
 
     }

@@ -18,9 +18,9 @@ namespace Core.Runtime.Managers
         private static int MAIN_TEX_ID = Shader.PropertyToID("_MainTex");
         private static int STENCIL_REF_ID = Shader.PropertyToID("_StencilRef");
 
-        private ItemGraphicConfig m_itemGraphicConfig;
-        public ItemGraphicConfig ItemGraphicConfig =>
-            m_itemGraphicConfig ??= Resources.Load<ItemGraphicConfig>("Config/ItemGraphicConfig");
+        private ItemConfig m_itemConfig;
+        public ItemConfig ItemConfig =>
+            m_itemConfig ??= Resources.Load<ItemConfig>("Config/ItemGraphicConfig");
         
         private Dictionary<int, Graphic> m_graphicMap;
 
