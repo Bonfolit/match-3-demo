@@ -17,6 +17,15 @@ namespace Core.Runtime.Managers
         public BoardConfig Config => m_config ??= Resources.Load<BoardConfig>("Config/BoardConfig");
         public Vector2 PlacementOffset => Config.Offset;
 
+        private ItemManager m_itemManager;
+
+        public override void ResolveDependencies()
+        {
+            base.ResolveDependencies();
+
+            m_itemManager = DI.Resolve<ItemManager>();
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -29,6 +38,26 @@ namespace Core.Runtime.Managers
         {
             var boardState = BoardSolver.Solve(Config.Dimensions.x, Config.Dimensions.y, in templateIds);
             
+            return boardState;
+        }
+
+        public BoardState GetCurrentBoardState()
+        {
+            var boardState = new BoardState
+            {
+                Width = Config.Dimensions.x,
+                Height = Config.Dimensions.y
+            };
+
+            var count = boardState.Width * boardState.Height;
+            
+            boardState.Ids = new int[count];
+
+            foreach (var item in m_itemManager.GetItemIterator())
+            {
+                boardState.Ids[item.Address.Slot.Id] = item.TemplateId;
+            }
+
             return boardState;
         }
 

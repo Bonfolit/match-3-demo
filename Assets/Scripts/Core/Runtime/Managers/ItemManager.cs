@@ -7,6 +7,8 @@ using BonLib.Pooling;
 using Core.Config;
 using Core.Runtime.Events.Gameplay;
 using Core.Runtime.Items;
+using Core.Runtime.Slots;
+using NaughtyAttributes;
 using UnityEngine;
 
 namespace Core.Runtime.Managers
@@ -85,7 +87,6 @@ namespace Core.Runtime.Managers
         public Item CreateItem(int templateId)
         {
             var item = m_factory.Create(templateId);
-            m_itemMap.Add(item.Id, item);
 
             var template = GetItemTemplate(templateId);
 
@@ -93,6 +94,7 @@ namespace Core.Runtime.Managers
 
             var handle = m_graphicManager.CreateItemGraphic(template, rentedPoolObj);
             item.SetGraphicHandle(handle);
+            m_itemMap.Add(item.Id, item);
 
             return item;
         }
@@ -101,6 +103,17 @@ namespace Core.Runtime.Managers
         {
             m_graphicManager.DestroyItemGraphic(in item);
             m_itemMap.Remove(item.Id);
+        }
+
+        public Item GetItem(int id)
+        {
+            return m_itemMap[id];
+        }
+
+        public void SetAddress(ref Item item, in Slot slot)
+        {
+            item.m_address.Slot = slot;
+            m_itemMap[item.Id] = item;
         }
 
         public ItemTemplate GetItemTemplate(int templateId)
@@ -122,18 +135,20 @@ namespace Core.Runtime.Managers
             
             Vector3 pos;
 
-            for (int i = 0; i < boardState.Width; i++)
+            for (int i = 0; i < boardState.Height; i++)
             {
-                for (int j = 0; j < boardState.Height; j++)
+                for (int j = 0; j < boardState.Width; j++)
                 {
-                    var index = j * boardState.Width + i;
+                    var index = i * boardState.Width + j;
                     
                     pos = m_boardManager.GetWorldPosition(index);
 
                     var item = CreateItem(boardState.Ids[index]);
                     var slot = m_slotManager.GetSlot(index);
                     
-                    item.SetAddress(in slot);
+                    SetAddress(ref item, in slot);
+                    
+                    // item.SetAddress(in slot);
 
                     var graphic = m_graphicManager.GetItemGraphic(in item);
                     var poolObj = ((PoolObject)graphic.Target);
@@ -141,6 +156,23 @@ namespace Core.Runtime.Managers
                     poolObjTransform.position = pos;
                     poolObjTransform.localScale = Config.Scale;
                 }
+            }
+        }
+
+        public ItemIterator GetItemIterator()
+        {
+            return new ItemIterator(m_itemMap);
+        }
+
+        [Button]
+        public void TestDestroy()
+        {
+            var boardState = m_boardManager.GetCurrentBoardState();
+            
+            for (int i = 0; i < boardState.Width; i++)
+            {
+                var item = GetItem(i + boardState.Height);
+                DestroyItem(in item);
             }
         }
 

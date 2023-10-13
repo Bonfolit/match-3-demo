@@ -8,7 +8,7 @@ namespace Core.Runtime.Items
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct Item : IEquatable<Item>
     {
-        private ItemAddress m_address;
+        public ItemAddress m_address;
         public GraphicHandle GraphicHandle;
         
         public int Id { get; }
