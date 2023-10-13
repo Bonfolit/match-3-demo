@@ -36,14 +36,6 @@ namespace Core.Runtime.Managers
 
         public void InitializeSlots(in Vector2Int dimensions)
         {
-            var unitOffset = m_boardManager.PlacementOffset;
-            var drawOffset = new Vector3(
-                -((float)(dimensions.x - 1) / 2f) * unitOffset.x, 
-                -((float)(dimensions.y - 1) / 2f) * unitOffset.y, 
-                0f);
-
-            Vector3 pos;
-
             var count = dimensions.x * dimensions.y;
             m_slots = new Slot[count];
 
@@ -53,7 +45,7 @@ namespace Core.Runtime.Managers
                 {
                     var index = j * dimensions.x + i;
                     
-                    pos = m_boardManager.GetWorldPosition(index);
+                    var pos = m_boardManager.GetWorldPosition(index);
                     
                     var rentedSlotPoolObj = PrefabPool.Rent(m_slotPoolObject);
                     var handle = m_graphicManager.CreateHandle(rentedSlotPoolObj);

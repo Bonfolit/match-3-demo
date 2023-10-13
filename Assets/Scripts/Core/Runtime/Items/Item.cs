@@ -14,6 +14,8 @@ namespace Core.Runtime.Items
         public int Id { get; }
         public int TemplateId { get; }
         public ItemAddress Address => m_address;
+
+        public bool IsValid { get; }
         public Item(int id, int templateId)
         {
             Id = id;
@@ -24,6 +26,8 @@ namespace Core.Runtime.Items
             };
 
             GraphicHandle = default;
+
+            IsValid = true;
         }
 
         public void SetAddress(in Slot slot)

@@ -10,27 +10,27 @@ namespace Core.Solver
         private static SolverConfig m_config;
         public static SolverConfig Config => m_config ??= Resources.Load<SolverConfig>("Config/SolverConfig");
 
-        public static BoardState Solve(int width, int height, in int[] templateIds)
+        public static MatchState Solve(int width, int height, in int[] templateIds)
         {
-            var boardState = new BoardState
+            var matchState = new MatchState
             {
                 Width = width,
                 Height = height
             };
             
-            var count = boardState.Height * boardState.Width;
+            var count = matchState.Height * matchState.Width;
 
-            boardState.Ids = new int[count];
+            matchState.TemplateIds = new int[count];
 
             for (int i = 0; i < count; i++)
             {
-                boardState.Ids[i] = templateIds[Random.Range(0, templateIds.Length)];
+                matchState.TemplateIds[i] = templateIds[Random.Range(0, templateIds.Length)];
             }
 
             const int ITERATION_LIMIT = 1000;
 
             var iter = 0;
-            while (iter < ITERATION_LIMIT && CheckMatches(in boardState, out var matches))
+            while (iter < ITERATION_LIMIT && CheckMatches(in matchState, out var matches))
             {
                 iter++;
                 
@@ -45,7 +45,7 @@ namespace Core.Solver
 
                 var replaceIndex = match.Indices[Random.Range(0, match.Indices.Length)];
 
-                boardState.Ids[replaceIndex] = newTemplate;
+                matchState.TemplateIds[replaceIndex] = newTemplate;
             }
 
             if (iter == ITERATION_LIMIT)
@@ -55,10 +55,10 @@ namespace Core.Solver
 
             Debug.Log($"Iteration reached: {iter}");
 
-            return boardState;
+            return matchState;
         }
 
-        public static bool CheckMatches(in BoardState state, out List<MatchData> matches)
+        public static bool CheckMatches(in MatchState state, out List<MatchData> matches)
         {
             matches = new List<MatchData>();
 
@@ -73,7 +73,7 @@ namespace Core.Solver
                 for (int j = 0; j < state.Height; j++)
                 {
                     var index = i + state.Width * j;
-                    var currentId = state.Ids[index];
+                    var currentId = state.TemplateIds[index];
 
                     if (scanId != currentId)
                     {
@@ -121,7 +121,7 @@ namespace Core.Solver
                 for (int j = 0; j < state.Width; j++)
                 {
                     var index = j + state.Width * i;
-                    var currentId = state.Ids[index];
+                    var currentId = state.TemplateIds[index];
 
                     if (scanId != currentId)
                     {

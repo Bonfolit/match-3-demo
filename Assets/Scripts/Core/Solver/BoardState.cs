@@ -1,11 +1,13 @@
-﻿namespace Core.Solver
+﻿using Core.Runtime.Items;
+
+namespace Core.Solver
 {
 
     public struct BoardState
     {
         public int Width;
         public int Height;
-        public int[] Ids;
+        public Item[] Items;
     }
 
 }

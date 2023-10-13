@@ -74,6 +74,14 @@ namespace Core.Runtime.Managers
             return m_graphicMap[item.GraphicHandle.Id];
         }
 
+        public void MoveItem(in Item item, Vector3 position)
+        {
+            var graphic = GetItemGraphic(in item);
+            var poolTransform = ((PoolObject)graphic.Target).transform;
+
+            poolTransform.position = position;
+        }
+
         public GraphicHandle CreateHandle(object target)
         {
             var graphic = new Graphic(target);

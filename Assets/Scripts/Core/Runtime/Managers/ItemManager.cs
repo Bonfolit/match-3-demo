@@ -27,6 +27,8 @@ namespace Core.Runtime.Managers
 
         private Dictionary<int, Item> m_itemMap;
 
+        private Dictionary<int, Item> m_addressMap;
+
         private ItemFactory m_factory;
 
         private GraphicManager m_graphicManager;
@@ -125,13 +127,7 @@ namespace Core.Runtime.Managers
         {
             var templateIds = GetAllTemplateIDs();
 
-            var boardState = m_boardManager.GenerateNewBoardState(in templateIds);
-            
-            var unitOffset = m_boardManager.PlacementOffset;
-            var drawOffset = new Vector3(
-                -((float)(boardState.Width - 1) / 2f) * unitOffset.x, 
-                -((float)(boardState.Height - 1) / 2f) * unitOffset.y, 
-                0f);
+            var boardState = m_boardManager.GenerateNewMatchState(in templateIds);
             
             Vector3 pos;
 
@@ -143,10 +139,10 @@ namespace Core.Runtime.Managers
                     
                     pos = m_boardManager.GetWorldPosition(index);
 
-                    var item = CreateItem(boardState.Ids[index]);
+                    var item = CreateItem(boardState.TemplateIds[index]);
                     var slot = m_slotManager.GetSlot(index);
                     
-                    SetAddress(ref item, in slot);
+                    m_boardManager.SetAddress(ref item, slot);
                     
                     // item.SetAddress(in slot);
 
@@ -164,14 +160,16 @@ namespace Core.Runtime.Managers
             return new ItemIterator(m_itemMap);
         }
 
+        public int destroyRow;
         [Button]
         public void TestDestroy()
         {
-            var boardState = m_boardManager.GetCurrentBoardState();
+            var boardState = m_boardManager.GetCurrentMatchState();
             
             for (int i = 0; i < boardState.Width; i++)
             {
-                var item = GetItem(i + boardState.Height);
+                var index = i + boardState.Width * destroyRow;
+                var item = m_boardManager.GetItem(index);
                 DestroyItem(in item);
             }
         }

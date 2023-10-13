@@ -11,13 +11,13 @@ namespace Tests
         [Test]
         public void TestRandomMatch()
         {
-            var state = new BoardState
+            var state = new MatchState
             {
                 Width = 4,
                 Height = 4
             };
 
-            state.Ids = new[] { 2, 3, 3, 3, 2, 1, -1, 2, 2, 2, -1, 1, 1, 0, -1, 3 };
+            state.TemplateIds = new[] { 2, 3, 3, 3, 2, 1, -1, 2, 2, 2, -1, 1, 1, 0, -1, 3 };
 
             var hasMatch = BoardSolver.CheckMatches(in state, out var matches);
 
@@ -64,7 +64,7 @@ namespace Tests
                 var strBuilder = new StringBuilder();
                 for (int j = 0; j < WIDTH; j++)
                 {
-                    strBuilder.Append(boardState.Ids[j + i * WIDTH]);
+                    strBuilder.Append(boardState.TemplateIds[j + i * WIDTH]);
 
                     if (j != WIDTH - 1)
                     {
