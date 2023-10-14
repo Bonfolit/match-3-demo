@@ -71,11 +71,12 @@ namespace Core.Runtime.Managers
 
         public Graphic GetItemGraphic(in Item item)
         {
-            return m_graphicMap[item.GraphicHandle.Id];
+            return GetGraphic(in item.GraphicHandle);
         }
 
-        public void MoveItem(in Item item, Vector3 position)
+        public void SetPosition(in Item item, Vector3 position)
         {
+            Debug.Log($"Move {item.Id} to {position}");
             var graphic = GetItemGraphic(in item);
             var poolTransform = ((PoolObject)graphic.Target).transform;
 
