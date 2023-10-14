@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using BonLib.DependencyInjection;
+using BonLib.Events;
 using BonLib.Managers;
 using Core.Config;
 using Core.Runtime.Events.Gameplay;
@@ -12,7 +13,8 @@ using UnityEngine;
 namespace Core.Runtime.Managers
 {
 
-    public class BoardManager : Manager<BoardManager>
+    public class BoardManager : Manager<BoardManager>,
+        IEventHandler<DestroyItemEvent>
     {
         private BoardConfig m_config;
         public BoardConfig Config => m_config ??= Resources.Load<BoardConfig>("Config/BoardConfig");
@@ -28,6 +30,13 @@ namespace Core.Runtime.Managers
             base.ResolveDependencies();
 
             m_itemManager = DI.Resolve<ItemManager>();
+        }
+
+        public override void SubscribeToEvents()
+        {
+            base.SubscribeToEvents();
+            
+            EventManager.AddListener<DestroyItemEvent>(this);
         }
 
         public override void Initialize()
@@ -108,14 +117,24 @@ namespace Core.Runtime.Managers
             m_itemManager.SetAddress(ref item, in slot);
         }
 
-        public Item GetItem(in Slot slot)
+        public Item GetItemAtSlot(in Slot slot)
         {
             return m_addressMap[slot.Id];
         }
         
-        public Item GetItem(int index)
+        public Item GetItemAtSlot(int slotIndex)
         {
-            return m_addressMap[index];
+            return m_addressMap[slotIndex];
+        }
+
+        public void ClearAddress(in Slot slot)
+        {
+            m_addressMap[slot.Id] = default;
+        }
+
+        public void OnEventReceived(ref DestroyItemEvent evt)
+        {
+            ClearAddress(evt.Slot);
         }
     }
 

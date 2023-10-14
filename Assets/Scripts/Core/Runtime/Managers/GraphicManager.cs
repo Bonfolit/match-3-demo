@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using BonLib.DependencyInjection;
 using BonLib.Events;
 using BonLib.Managers;
@@ -66,7 +67,20 @@ namespace Core.Runtime.Managers
 
         public Graphic GetGraphic(in GraphicHandle handle)
         {
-            return m_graphicMap[handle.Id];
+            try
+            {
+                // Debug.Log($"Get Graphic Handle {handle.Id}");
+                var graphic = m_graphicMap[handle.Id];
+                
+                return graphic;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
         }
 
         public Graphic GetItemGraphic(in Item item)
@@ -76,7 +90,7 @@ namespace Core.Runtime.Managers
 
         public void SetPosition(in Item item, Vector3 position)
         {
-            Debug.Log($"Move {item.Id} to {position}");
+            // Debug.Log($"Move {item.Id} to {position}");
             var graphic = GetItemGraphic(in item);
             var poolTransform = ((PoolObject)graphic.Target).transform;
 
@@ -96,6 +110,8 @@ namespace Core.Runtime.Managers
 
         public void DisposeHandle(in GraphicHandle handle)
         {
+            Debug.Log($"Dispose Graphic Handle {handle.Id}");
+
             m_graphicMap.Remove(handle.Id);
         }
 

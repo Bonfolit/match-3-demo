@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Core.Runtime.Graphics
 {
@@ -14,7 +15,9 @@ namespace Core.Runtime.Graphics
 
         public GraphicHandle Create()
         {
-            return new GraphicHandle(GenerateId());
+            var handle = new GraphicHandle(GenerateId());
+            Debug.Log($"Create Graphic Handle {handle.Id}");
+            return handle;
         }
 
         private int GenerateId()

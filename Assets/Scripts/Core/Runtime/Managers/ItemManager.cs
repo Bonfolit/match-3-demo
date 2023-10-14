@@ -14,7 +14,8 @@ using UnityEngine;
 namespace Core.Runtime.Managers
 {
 
-    public class ItemManager : Manager<ItemManager>
+    public class ItemManager : Manager<ItemManager>,
+        IEventHandler<DestroyItemEvent>
     {
         private static int MAIN_TEX_ID = Shader.PropertyToID("_MainTex");
         private static int STENCIL_REF_ID = Shader.PropertyToID("_StencilRef");
@@ -44,6 +45,13 @@ namespace Core.Runtime.Managers
             m_slotManager = DI.Resolve<SlotManager>();
         }
 
+        public override void SubscribeToEvents()
+        {
+            base.SubscribeToEvents();
+            
+            EventManager.AddListener<DestroyItemEvent>(this, Priority.Critical);
+        }
+
         public override void PreInitialize()
         {
             base.PreInitialize();
@@ -51,6 +59,18 @@ namespace Core.Runtime.Managers
             m_itemMap = new Dictionary<int, Item>(512);
 
             RegisterTemplates();
+        }
+
+        public void OnEventReceived(ref DestroyItemEvent evt)
+        {
+            if (!evt.Item.IsValid)
+            {
+                evt.IsConsumed = true;
+                return;
+            }
+            
+            
+            DestroyItem(in evt.Item);
         }
 
         private void RegisterTemplates()
@@ -110,6 +130,7 @@ namespace Core.Runtime.Managers
 
         public void DestroyItem(in Item item)
         {
+            Debug.Log($"Destroy item {item.Id}");
             m_graphicManager.DestroyItemGraphic(in item);
             m_itemMap.Remove(item.Id);
         }
@@ -173,15 +194,17 @@ namespace Core.Runtime.Managers
             var boardState = m_boardManager.GetCurrentMatchState();
 
             var index = Random.Range(0, boardState.Width * boardState.Height);
+            // var index = 0;
 
-            var item = m_boardManager.GetItem(index);
+            var item = m_boardManager.GetItemAtSlot(index);
 
             if (item.IsValid)
             {
-                DestroyItem(in item);
+                var evt = new DestroyItemEvent(item, m_slotManager.GetSlot(index));
+                EventManager.SendEvent(ref evt);
+                // DestroyItem(in item);
             }
         }
-
     }
 
 }

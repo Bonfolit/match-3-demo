@@ -156,7 +156,8 @@ namespace Core.Runtime.Managers
                 for (int j = 0; j < gapCount; j++)
                 {
                     var createIndex = i + (boardState.Height + j) * boardState.Width;
-                    var targetIndex = createIndex - (j + 1) * boardState.Width;
+                    // var targetIndex = createIndex - (j + 1) * boardState.Width;
+                    var targetIndex = i + (boardState.Height + j - gapCount) * boardState.Width;
                     var templateId = m_itemManager.GetRandomTemplateId();
             
                     var item = m_itemManager.CreateItem(templateId);
@@ -165,6 +166,10 @@ namespace Core.Runtime.Managers
                     var pos = m_boardManager.GetWorldPosition(createIndex);
                     m_graphicManager.SetPosition(in item, pos);
 
+                    var createCoords = createIndex.GetCoordinates(boardState.Width);
+                    var targetCoords = targetIndex.GetCoordinates(boardState.Width);
+                    Debug.Log($"Spawn item {item.Id} of template {item.TemplateId} at {createCoords.x} - {createCoords.y}, then move to {targetCoords.x} - {targetCoords.y}");
+            
             
                     var moveCommand = new MoveCommand(createIndex, targetIndex, item);
                     moveCommands.Add(moveCommand);
