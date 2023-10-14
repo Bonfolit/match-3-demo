@@ -86,6 +86,13 @@ namespace Core.Runtime.Managers
             return templateIds;
         }
 
+        public int GetRandomTemplateId()
+        {
+            var templateIds = GetAllTemplateIDs();
+
+            return templateIds[Random.Range(0, templateIds.Length)];
+        }
+
         public Item CreateItem(int templateId)
         {
             var item = m_factory.Create(templateId);
@@ -160,16 +167,17 @@ namespace Core.Runtime.Managers
             return new ItemIterator(m_itemMap);
         }
 
-        public int destroyRow;
         [Button]
         public void TestDestroy()
         {
             var boardState = m_boardManager.GetCurrentMatchState();
-            
-            for (int i = 0; i < boardState.Width; i++)
+
+            var index = Random.Range(0, boardState.Width * boardState.Height);
+
+            var item = m_boardManager.GetItem(index);
+
+            if (item.IsValid)
             {
-                var index = i + boardState.Width * destroyRow;
-                var item = m_boardManager.GetItem(index);
                 DestroyItem(in item);
             }
         }

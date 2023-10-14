@@ -91,6 +91,8 @@ namespace Core.Runtime.Managers
         private List<MoveCommand> GenerateMoveCommands(in BoardState boardState)
         {
             var gaps = new bool[boardState.Height];
+            var gapCounts = new int[boardState.Width];
+            gapCounts.Populate(0);
 
             var moveCommands = new List<MoveCommand>();
 
@@ -107,31 +109,64 @@ namespace Core.Runtime.Managers
                     }
                 }
 
+                for (int j = 0; j < boardState.Height; j++)
+                {
+                    if (gaps[j])
+                    {
+                        gapCounts[i]++;
+                    }
+                }
+
                 for (int j = boardState.Height - 1; j >= 0; j--)
                 {
                     if (gaps[j])
                         continue;
 
-                    var gapCount = 0;
+                    var gapCountBelow = 0;
 
                     for (int k = j; k >= 0; k--)
                     {
                         if (gaps[k])
                         {
-                            gapCount++;
+                            gapCountBelow++;
                         }
                     }
 
-                    if (gapCount == 0)
+                    if (gapCountBelow == 0)
                     {
                         break;
                     }
 
                     var index = i + boardState.Width * j;
 
-                    var moveCommand = new MoveCommand(index, index - boardState.Width * gapCount,
+                    var moveCommand = new MoveCommand(index, index - boardState.Width * gapCountBelow,
                         boardState.Items[index]);
 
+                    moveCommands.Add(moveCommand);
+                }
+            }
+
+            for (int i = 0; i < boardState.Width; i++)
+            {
+                var gapCount = gapCounts[i];
+                
+                if (gapCount == 0)
+                    continue;
+            
+                for (int j = 0; j < gapCount; j++)
+                {
+                    var createIndex = i + (boardState.Height + j) * boardState.Width;
+                    var targetIndex = createIndex - (j + 1) * boardState.Width;
+                    var templateId = m_itemManager.GetRandomTemplateId();
+            
+                    var item = m_itemManager.CreateItem(templateId);
+                    var slot = new Slot(createIndex, default);
+                    m_boardManager.SetAddress(ref item, slot);
+                    var pos = m_boardManager.GetWorldPosition(createIndex);
+                    m_graphicManager.SetPosition(in item, pos);
+
+            
+                    var moveCommand = new MoveCommand(createIndex, targetIndex, item);
                     moveCommands.Add(moveCommand);
                 }
             }
