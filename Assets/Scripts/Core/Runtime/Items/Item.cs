@@ -22,7 +22,7 @@ namespace Core.Runtime.Items
             TemplateId = templateId;
             m_address = new ItemAddress
             {
-                Slot = new Slot(-1, default)
+                Slot = new Slot(-1)
             };
 
             GraphicHandle = default;

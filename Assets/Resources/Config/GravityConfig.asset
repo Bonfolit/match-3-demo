@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: GravityConfig
   m_EditorClassIdentifier: 
   Acceleration: 19.62
-  DelayPerRow: 0.1
+  DelayPerRow: 0.05

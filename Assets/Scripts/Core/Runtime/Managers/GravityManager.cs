@@ -80,8 +80,10 @@ namespace Core.Runtime.Managers
 
             var poolTransform = ((PoolObject)m_graphicManager.GetItemGraphic(in item).Target).transform;
 
-            poolTransform.DOJump(destination, 0, 1, duration)
-                .SetDelay(delay);
+            // poolTransform.DOJump(destination, 0, 0, duration)
+            //     .SetDelay(delay);
+
+            poolTransform.DOMove(destination, duration).SetDelay(delay).SetEase(Ease.InQuad);
             
             m_boardManager.SetAddress(ref item, in slot);
 
@@ -161,7 +163,7 @@ namespace Core.Runtime.Managers
                     var templateId = m_itemManager.GetRandomTemplateId();
             
                     var item = m_itemManager.CreateItem(templateId);
-                    var slot = new Slot(createIndex, default);
+                    var slot = new Slot(createIndex);
                     m_boardManager.SetAddress(ref item, slot);
                     var pos = m_boardManager.GetWorldPosition(createIndex);
                     m_graphicManager.SetPosition(in item, pos);
