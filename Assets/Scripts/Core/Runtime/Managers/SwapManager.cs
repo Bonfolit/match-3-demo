@@ -55,9 +55,6 @@ namespace Core.Runtime.Managers
 
             var hasMatches = BoardSolver.CheckMatches(in matchState, out _);
 
-            if (!hasMatches)
-                return;
-
             var fromPos = m_boardManager.GetWorldPosition(fromSlot.Id);
             var toPos = m_boardManager.GetWorldPosition(toSlot.Id);
 
@@ -68,6 +65,22 @@ namespace Core.Runtime.Managers
             temp.z += .1f;
             fromTransform.position = temp;
 
+            if (!hasMatches)
+            {
+                fromTransform.DOMove(toPos, duration)
+                    .OnComplete(() =>
+                    {
+                        fromTransform.DOMove(fromPos, duration);
+                    });
+                toTransform.DOMove(fromPos, duration).OnComplete(() =>
+                {
+                    toTransform.DOMove(toPos, duration);
+                });
+                
+                await Task.Delay((int)(2f * duration * 1000f));
+                return;
+            }
+            
             fromTransform.DOMove(toPos, duration);
             toTransform.DOMove(fromPos, duration);
             

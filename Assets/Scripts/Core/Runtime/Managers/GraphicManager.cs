@@ -23,17 +23,8 @@ namespace Core.Runtime.Managers
 
         private GraphicHandleFactory m_handleFactory;
 
-        private ItemManager m_itemManager;
-
         [SerializeField]
         private Transform m_maskTransform;
-        
-        public override void ResolveDependencies()
-        {
-            base.ResolveDependencies();
-
-            m_itemManager = DI.Resolve<ItemManager>();
-        }
 
         public override void SubscribeToEvents()
         {
