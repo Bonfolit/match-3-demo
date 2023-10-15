@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: 1
   Texture: {fileID: 2800000, guid: 5ec9eb624ac0d4445a0e9cae00abcbd5, type: 3}
-  RendererPoolObject: {fileID: 6830852468729197747, guid: ffb2b33b4d502b24595aca8011cf1e4c,
+  RendererPoolObject: {fileID: 6830852468729197747, guid: 0251f41fd1f0dd1489a639cf380f83e6,
     type: 3}

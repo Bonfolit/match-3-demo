@@ -53,8 +53,6 @@ namespace Core.Runtime.Managers
                     m_slots[index] = new Slot(index, in handle);
                     
                     var poolObjTransform = rentedSlotPoolObj.transform;
-                    var rend = ((MeshRenderer)rentedSlotPoolObj.CustomReference);
-                    // rend.SetPropertyBlock(m_mpb);
                     
                     poolObjTransform.position = pos;
                     poolObjTransform.localScale = Config.Scale;

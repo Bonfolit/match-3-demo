@@ -12,5 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9e6494f7f8746989b29c8d4664effb9, type: 3}
   m_Name: ItemConfig
   m_EditorClassIdentifier: 
-  Scale: {x: 2.5, y: 2.5, z: 2.5}
-  Offset: {x: 2.7, y: 2.7}
+  Scale: {x: 2.5, y: 2.5, z: 1}

@@ -2,7 +2,7 @@
 {
     Properties
     {
-        [PerRendererData]_MainTex ("Texture", 2D) = "white" {}
+        _MainTex ("Texture", 2D) = "white" {}
     }
     SubShader
     {

@@ -14,4 +14,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Texture: {fileID: 2800000, guid: 7030380e90f4ab34fb15da5d286fedcf, type: 3}
   Scale: {x: 2.5, y: 2.5, z: 1}
-  Offset: {x: 2.7, y: 2.7}
