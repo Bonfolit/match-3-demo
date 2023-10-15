@@ -54,7 +54,7 @@ namespace Core.Runtime.Managers
 
         private void LoadMainSceneObjects()
         {
-            // Instantiate(Config.UIPrefab);
+            Instantiate(Config.UIPrefab);
         }
 
         private void InitializeManagers()

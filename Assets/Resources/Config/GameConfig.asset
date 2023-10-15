@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c35b11b62dace2749986702be9828dd9, type: 3}
   m_Name: GameConfig
   m_EditorClassIdentifier: 
-  UIPrefab: {fileID: 0}
+  UIPrefab: {fileID: 7232042202075383939, guid: ef567ab866fac994484e01eee6722963,
+    type: 3}
   LoadingScene: 1
   MainScene: 2

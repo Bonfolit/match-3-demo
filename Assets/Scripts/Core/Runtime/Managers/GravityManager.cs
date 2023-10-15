@@ -164,7 +164,7 @@ namespace Core.Runtime.Managers
             
                     var item = m_itemManager.CreateItem(templateId);
                     var slot = new Slot(createIndex);
-                    m_boardManager.SetAddress(ref item, slot);
+                    m_boardManager.SetAddress(ref item, in slot);
                     var pos = m_boardManager.GetWorldPosition(createIndex);
                     m_graphicManager.SetPosition(in item, pos);
 

@@ -57,7 +57,7 @@ namespace Tests
 
             var templateIds = new int[] { 0, 1, 2, 3 };
 
-            var boardState = BoardSolver.Solve(WIDTH, HEIGHT, in templateIds);
+            var boardState = BoardSolver.CreateBoardConfiguration(WIDTH, HEIGHT, in templateIds);
 
             for (int i = 0; i < HEIGHT; i++)
             {

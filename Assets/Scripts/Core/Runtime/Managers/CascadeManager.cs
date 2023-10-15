@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using BonLib.DependencyInjection;
+using BonLib.Events;
 using BonLib.Managers;
+using Codice.Client.BaseCommands;
 using Core.Runtime.Events.Gameplay;
 using Core.Runtime.Slots;
 using Core.Solver;
@@ -9,11 +11,14 @@ using NaughtyAttributes;
 namespace Core.Runtime.Managers
 {
 
-    public class CascadeManager : Manager<CascadeManager>
+    public class CascadeManager : Manager<CascadeManager>,
+        IEventHandler<TriggerCascadeEvent>
     {
         private GravityManager m_gravityManager;
         private BoardManager m_boardManager;
         private ItemManager m_itemManager;
+
+        private Task m_cascadeTask;
 
         public override void ResolveDependencies()
         {
@@ -22,6 +27,23 @@ namespace Core.Runtime.Managers
             m_gravityManager = DI.Resolve<GravityManager>();
             m_boardManager = DI.Resolve<BoardManager>();
             m_itemManager = DI.Resolve<ItemManager>();
+        }
+
+        public override void SubscribeToEvents()
+        {
+            base.SubscribeToEvents();
+            
+            EventManager.AddListener<TriggerCascadeEvent>(this);
+        }
+
+        public void OnEventReceived(ref TriggerCascadeEvent evt)
+        {
+            if (m_cascadeTask != null && !m_cascadeTask.IsCompleted)
+            {
+                return;
+            }
+            
+            m_cascadeTask = TriggerCascade();
         }
 
         [Button]
@@ -35,12 +57,12 @@ namespace Core.Runtime.Managers
             {
                 cascadeCount++;
                 
-                continueCascade = await m_gravityManager.TryApplyGravity();
+                var appliedGravity = await m_gravityManager.TryApplyGravity();
 
                 var matchState = m_boardManager.GetCurrentMatchState();
-                continueCascade &= BoardSolver.CheckMatches(in matchState, out var matches);
+                var hasMatches = BoardSolver.CheckMatches(in matchState, out var matches);
 
-                if (continueCascade)
+                if (hasMatches)
                 {
                     foreach (var matchData in matches)
                     {
@@ -55,6 +77,8 @@ namespace Core.Runtime.Managers
                         }
                     }
                 }
+
+                continueCascade = appliedGravity || hasMatches;
             }
         }
     }

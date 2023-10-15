@@ -14,7 +14,8 @@ namespace Core.Runtime.Managers
 {
 
     public class BoardManager : Manager<BoardManager>,
-        IEventHandler<DestroyItemEvent>
+        IEventHandler<DestroyItemEvent>,
+        IEventHandler<SwipeSlotsEvent>
     {
         private BoardConfig m_config;
         public BoardConfig Config => m_config ??= Resources.Load<BoardConfig>("Config/BoardConfig");
@@ -22,14 +23,17 @@ namespace Core.Runtime.Managers
         
         private Dictionary<int, Item> m_addressMap;
 
-
         private ItemManager m_itemManager;
+        private GraphicManager m_graphicManager;
 
+        private Vector3 m_bottomLeftPos;
+        
         public override void ResolveDependencies()
         {
             base.ResolveDependencies();
 
             m_itemManager = DI.Resolve<ItemManager>();
+            m_graphicManager = DI.Resolve<GraphicManager>();
         }
 
         public override void SubscribeToEvents()
@@ -37,6 +41,17 @@ namespace Core.Runtime.Managers
             base.SubscribeToEvents();
             
             EventManager.AddListener<DestroyItemEvent>(this);
+            EventManager.AddListener<SwipeSlotsEvent>(this);
+        }
+
+        public override void PreInitialize()
+        {
+            base.PreInitialize();
+            
+            m_bottomLeftPos = new Vector3(
+                -((float)(Config.Dimensions.x - 1) / 2f) * PlacementOffset.x, 
+                -((float)(Config.Dimensions.y - 1) / 2f) * PlacementOffset.y, 
+                0f);
         }
 
         public override void Initialize()
@@ -49,9 +64,32 @@ namespace Core.Runtime.Managers
             EventManager.SendEvent(ref initializeEvt);
         }
 
+        public void OnEventReceived(ref DestroyItemEvent evt)
+        {
+            ClearAddress(evt.Slot);
+        }
+
+        public void OnEventReceived(ref SwipeSlotsEvent evt)
+        {
+            var fromItem = GetItemAtSlot(in evt.FromSlot);
+            var toItem = GetItemAtSlot(in evt.ToSlot);
+
+            var fromPos = GetWorldPosition(evt.FromSlot.Id);
+            var toPos = GetWorldPosition(evt.ToSlot.Id);
+            
+            m_graphicManager.SetPosition(in fromItem, toPos);
+            m_graphicManager.SetPosition(in toItem, fromPos);
+            
+            SetAddress(ref fromItem, evt.ToSlot);
+            SetAddress(ref toItem, evt.FromSlot);
+
+            var cascadeEvt = new TriggerCascadeEvent();
+            EventManager.SendEvent(ref cascadeEvt);
+        }
+
         public MatchState GenerateNewMatchState(in int[] templateIds)
         {
-            var matchState = BoardSolver.Solve(Config.Dimensions.x, Config.Dimensions.y, in templateIds);
+            var matchState = BoardSolver.CreateBoardConfiguration(Config.Dimensions.x, Config.Dimensions.y, in templateIds);
             
             return matchState;
         }
@@ -98,10 +136,7 @@ namespace Core.Runtime.Managers
 
         public Vector3 GetWorldPosition(int index)
         {
-            var pos = new Vector3(
-                -((float)(Config.Dimensions.x - 1) / 2f) * PlacementOffset.x, 
-                -((float)(Config.Dimensions.y - 1) / 2f) * PlacementOffset.y, 
-                0f);
+            var pos = m_bottomLeftPos;
 
             var coords = index.GetCoordinates(Config.Dimensions.x);
 
@@ -109,6 +144,16 @@ namespace Core.Runtime.Managers
             pos.y += coords.y * PlacementOffset.y;
 
             return pos;
+        }
+
+        public int GetIndexFromWorldPos(Vector3 pos)
+        {
+            var refPos = (Vector2)m_bottomLeftPos - PlacementOffset * .5f;
+
+            var x = (int)((pos.x - refPos.x) / PlacementOffset.x);
+            var y = (int)((pos.y - refPos.y) / PlacementOffset.y);
+                
+            return (x, y).GetIndex(Config.Dimensions.x);
         }
 
         public void SetAddress(ref Item item, in Slot slot)
@@ -130,11 +175,6 @@ namespace Core.Runtime.Managers
         public void ClearAddress(in Slot slot)
         {
             m_addressMap[slot.Id] = default;
-        }
-
-        public void OnEventReceived(ref DestroyItemEvent evt)
-        {
-            ClearAddress(evt.Slot);
         }
     }
 

@@ -10,7 +10,7 @@ namespace Core.Solver
         private static SolverConfig m_config;
         public static SolverConfig Config => m_config ??= Resources.Load<SolverConfig>("Config/SolverConfig");
 
-        public static MatchState Solve(int width, int height, in int[] templateIds)
+        public static MatchState CreateBoardConfiguration(int width, int height, in int[] templateIds)
         {
             var matchState = new MatchState
             {

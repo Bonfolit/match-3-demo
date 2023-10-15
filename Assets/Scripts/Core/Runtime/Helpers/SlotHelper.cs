@@ -7,6 +7,11 @@
         {
             return (index % width, index / width);
         }
+
+        public static int GetIndex(this (int x, int y) coords, int width)
+        {
+            return coords.x + coords.y * width;
+        }
         
         public static void Populate<T>(this T[] arr, T value ) {
             for ( int i = 0; i < arr.Length;i++ ) {
