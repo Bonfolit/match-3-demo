@@ -18,10 +18,6 @@ namespace Core.Runtime.Managers
     {
         private static int MAIN_TEX_ID = Shader.PropertyToID("_MainTex");
         private static int STENCIL_REF_ID = Shader.PropertyToID("_StencilRef");
-
-        private ItemConfig m_itemConfig;
-        public ItemConfig ItemConfig =>
-            m_itemConfig ??= Resources.Load<ItemConfig>("Config/ItemGraphicConfig");
         
         private Dictionary<int, Graphic> m_graphicMap;
 
@@ -32,8 +28,6 @@ namespace Core.Runtime.Managers
         [SerializeField]
         private Transform m_maskTransform;
         
-        private MaterialPropertyBlock m_mpb;
-
         public override void ResolveDependencies()
         {
             base.ResolveDependencies();
@@ -55,9 +49,6 @@ namespace Core.Runtime.Managers
             m_graphicMap = new Dictionary<int, Graphic>(512);
 
             m_handleFactory = new GraphicHandleFactory();
-
-            m_mpb = new MaterialPropertyBlock();
-
         }
 
         public void OnEventReceived(ref SetPlayableAreaEvent evt)
@@ -117,10 +108,6 @@ namespace Core.Runtime.Managers
 
         public GraphicHandle CreateItemGraphic(ItemTemplate template, PoolObject graphicTarget)
         {
-            var rend = ((MeshRenderer)graphicTarget.CustomReference);
-            m_mpb.SetTexture(MAIN_TEX_ID, template.Texture);
-
-            rend.SetPropertyBlock(m_mpb);
             var handle = CreateHandle(graphicTarget);
             
             return handle;
