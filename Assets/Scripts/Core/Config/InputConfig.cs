@@ -7,6 +7,7 @@ namespace Core.Config
     public class InputConfig : ScriptableObject
     {
         public float SwipeSensitivity;
+        public float SwipeDuration;
     }
 
 }

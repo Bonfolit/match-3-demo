@@ -120,6 +120,7 @@ namespace Core.Runtime.Managers
             var template = GetItemTemplate(templateId);
 
             var rentedPoolObj = PrefabPool.Rent(template.RendererPoolObject);
+            rentedPoolObj.transform.localScale = Config.Scale;
 
             var handle = m_graphicManager.CreateItemGraphic(template, rentedPoolObj);
             item.SetGraphicHandle(handle);

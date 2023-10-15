@@ -1,21 +1,23 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using BonLib.DependencyInjection;
 using BonLib.Events;
 using BonLib.Managers;
+using BonLib.Pooling;
 using Core.Config;
 using Core.Runtime.Events.Gameplay;
 using Core.Runtime.Helpers;
 using Core.Runtime.Items;
 using Core.Runtime.Slots;
 using Core.Solver;
+using DG.Tweening;
 using UnityEngine;
 
 namespace Core.Runtime.Managers
 {
 
     public class BoardManager : Manager<BoardManager>,
-        IEventHandler<DestroyItemEvent>,
-        IEventHandler<SwipeSlotsEvent>
+        IEventHandler<DestroyItemEvent>
     {
         private BoardConfig m_config;
         public BoardConfig Config => m_config ??= Resources.Load<BoardConfig>("Config/BoardConfig");
@@ -41,7 +43,6 @@ namespace Core.Runtime.Managers
             base.SubscribeToEvents();
             
             EventManager.AddListener<DestroyItemEvent>(this);
-            EventManager.AddListener<SwipeSlotsEvent>(this);
         }
 
         public override void PreInitialize()
@@ -67,24 +68,6 @@ namespace Core.Runtime.Managers
         public void OnEventReceived(ref DestroyItemEvent evt)
         {
             ClearAddress(evt.Slot);
-        }
-
-        public void OnEventReceived(ref SwipeSlotsEvent evt)
-        {
-            var fromItem = GetItemAtSlot(in evt.FromSlot);
-            var toItem = GetItemAtSlot(in evt.ToSlot);
-
-            var fromPos = GetWorldPosition(evt.FromSlot.Id);
-            var toPos = GetWorldPosition(evt.ToSlot.Id);
-            
-            m_graphicManager.SetPosition(in fromItem, toPos);
-            m_graphicManager.SetPosition(in toItem, fromPos);
-            
-            SetAddress(ref fromItem, evt.ToSlot);
-            SetAddress(ref toItem, evt.FromSlot);
-
-            var cascadeEvt = new TriggerCascadeEvent();
-            EventManager.SendEvent(ref cascadeEvt);
         }
 
         public MatchState GenerateNewMatchState(in int[] templateIds)

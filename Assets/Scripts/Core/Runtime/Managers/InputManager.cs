@@ -50,7 +50,6 @@ namespace Core.Runtime.Managers
         public void OnPointerDown(PointerEventData eventData)
         {
             m_dragStartPos = Camera.ScreenToWorldPoint(eventData.position);
-            Debug.LogError($"World position: {m_dragStartPos}");
             m_isDragging = true;
         }
 
@@ -134,9 +133,7 @@ namespace Core.Runtime.Managers
             if (!isValidSwipe)
                 return;
             
-            // dragEnd = m_boardManager.GetIndexFromWorldPos(dragPos);
-
-            var evt = new SwipeSlotsEvent(new Slot(dragStart), new Slot(dragEnd));
+            var evt = new SwapSlotsEvent(new Slot(dragStart), new Slot(dragEnd), Config.SwipeDuration);
             EventManager.SendEvent(ref evt);
                 
             Debug.LogWarning($"Swipe from {dragStart} to {dragEnd}");

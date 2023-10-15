@@ -92,9 +92,9 @@ namespace Core.Runtime.Managers
         {
             // Debug.Log($"Move {item.Id} to {position}");
             var graphic = GetItemGraphic(in item);
-            var poolTransform = ((PoolObject)graphic.Target).transform;
+            var poolObjTransform = ((PoolObject)graphic.Target).transform;
 
-            poolTransform.position = position;
+            poolObjTransform.position = position;
         }
 
         public GraphicHandle CreateHandle(object target)
