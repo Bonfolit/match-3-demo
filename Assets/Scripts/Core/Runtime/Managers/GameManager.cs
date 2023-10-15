@@ -22,6 +22,7 @@ namespace Core.Runtime.Managers
 
         private void Awake()
         {
+            Application.targetFrameRate = 60;
             DontDestroyOnLoad(this.gameObject);
             
             DI.Bind(this);

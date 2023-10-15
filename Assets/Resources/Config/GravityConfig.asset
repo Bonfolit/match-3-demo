@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a01f55c30e9439286cd1877bc635acc, type: 3}
   m_Name: GravityConfig
   m_EditorClassIdentifier: 
-  Acceleration: 108.04
+  Acceleration: 120
   DelayPerRow: 0.05
