@@ -8,6 +8,7 @@ using Core.Runtime.Events.Gameplay;
 using Core.Runtime.Slots;
 using Core.Solver;
 using DG.Tweening;
+using UnityEngine;
 
 namespace Core.Runtime.Managers
 {
@@ -61,19 +62,23 @@ namespace Core.Runtime.Managers
             var fromPos = m_boardManager.GetWorldPosition(fromSlot.Id);
             var toPos = m_boardManager.GetWorldPosition(toSlot.Id);
 
-            var fromTransform = ((PoolObject)m_graphicManager.GetGraphic(in fromItem.GraphicHandle).Target).transform;
-            var toTransform = ((PoolObject)m_graphicManager.GetGraphic(in toItem.GraphicHandle).Target).transform;
+            var fromRenderer = ((SpriteRenderer)((PoolObject)m_graphicManager.GetGraphic(in fromItem.GraphicHandle).Target).CustomReference);
+            var toRenderer = ((SpriteRenderer)((PoolObject)m_graphicManager.GetGraphic(in toItem.GraphicHandle).Target).CustomReference);
+            var fromTransform = fromRenderer.transform;
+            var toTransform = toRenderer.transform;
 
-            var temp = fromPos;
-            temp.z += .1f;
-            fromTransform.position = temp;
+            fromRenderer.sortingOrder += 1;
 
             if (!hasMatches)
             {
                 fromTransform.DOMove(toPos, duration)
                     .OnComplete(() =>
                     {
-                        fromTransform.DOMove(fromPos, duration);
+                        fromTransform.DOMove(fromPos, duration)
+                            .OnComplete(() =>
+                            {
+                                fromRenderer.sortingOrder -= 1;
+                            });
                     });
                 toTransform.DOMove(fromPos, duration).OnComplete(() =>
                 {
@@ -88,6 +93,8 @@ namespace Core.Runtime.Managers
             toTransform.DOMove(fromPos, duration);
             
             await Task.Delay((int)(duration * 1000f));
+            
+            fromRenderer.sortingOrder -= 1;
             
             m_boardManager.SwapSlots(in fromSlot, in toSlot);
 

@@ -14,8 +14,8 @@
         
         Blend SrcAlpha OneMinusSrcAlpha
         ColorMask 0
-//        ZWrite Off
-//        ZTest Off
+        ZWrite Off
+        ZTest Off
 
         Stencil
         {
