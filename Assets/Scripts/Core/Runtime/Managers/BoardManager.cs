@@ -11,6 +11,7 @@ using Core.Runtime.Items;
 using Core.Runtime.Slots;
 using Core.Solver;
 using DG.Tweening;
+using NaughtyAttributes;
 using UnityEngine;
 
 namespace Core.Runtime.Managers
@@ -23,7 +24,8 @@ namespace Core.Runtime.Managers
         public BoardConfig Config => m_config ??= Resources.Load<BoardConfig>("Config/BoardConfig");
         public Vector2 PlacementOffset => Config.Offset;
         
-        private Dictionary<int, Item> m_addressMap;
+        private Dictionary<int, Item> m_slotContentMap;
+        private Dictionary<int, Slot> m_addressMap;
 
         private ItemManager m_itemManager;
         private GraphicManager m_graphicManager;
@@ -59,7 +61,8 @@ namespace Core.Runtime.Managers
         {
             base.Initialize();
 
-            m_addressMap = new Dictionary<int, Item>(Config.Dimensions.x * Config.Dimensions.y);
+            m_slotContentMap = new Dictionary<int, Item>(Config.Dimensions.x * Config.Dimensions.y * 2);
+            m_addressMap = new Dictionary<int, Slot>(Config.Dimensions.x * Config.Dimensions.y * 2);
 
             var initializeEvt = new InitializeBoardEvent(Config.Dimensions, Config.Offset);
             EventManager.SendEvent(ref initializeEvt);
@@ -67,7 +70,7 @@ namespace Core.Runtime.Managers
 
         public void OnEventReceived(ref DestroyItemEvent evt)
         {
-            ClearAddress(evt.Slot);
+            ClearSlot(evt.Slot);
         }
 
         public MatchState GenerateNewMatchState(in int[] templateIds)
@@ -89,9 +92,20 @@ namespace Core.Runtime.Managers
             matchState.TemplateIds = new int[count];
             matchState.TemplateIds.Populate(-1);
 
-            foreach (var item in m_itemManager.GetItemIterator())
+            foreach (var kv in m_slotContentMap)
             {
-                matchState.TemplateIds[item.Address.Slot.Id] = item.TemplateId;
+                if (kv.Key >= count)
+                    continue;
+                
+                var item = kv.Value;
+                if (item.IsValid)
+                {
+                    matchState.TemplateIds[kv.Key] = item.TemplateId;
+                }
+                else
+                {
+                    matchState.TemplateIds[kv.Key] = -1;
+                }
             }
 
             return matchState;
@@ -108,10 +122,13 @@ namespace Core.Runtime.Managers
             var count = boardState.Width * boardState.Height;
 
             boardState.Items = new Item[count];
-            
-            foreach (var item in m_itemManager.GetItemIterator())
+
+            foreach (var kv in m_slotContentMap)
             {
-                boardState.Items[item.Address.Slot.Id] = item;
+                if (kv.Key >= count)
+                    continue;
+                
+                boardState.Items[kv.Key] = kv.Value;
             }
 
             return boardState;
@@ -139,25 +156,80 @@ namespace Core.Runtime.Managers
             return (x, y).GetIndex(Config.Dimensions.x);
         }
 
+        public bool IsSpawnColumn(int rowIndex)
+        {
+            return Config.SpawnColumns[rowIndex];
+        }
+
         public void SetAddress(ref Item item, in Slot slot)
         {
-            m_addressMap[slot.Id] = item;
+            // Debug.LogError($"Set address {slot.Id.GetCoordinates(Config.Dimensions.x)}");
+            Debug.LogError($"Set address {slot.Id}");
+            if (m_slotContentMap.ContainsKey(slot.Id) && m_slotContentMap[slot.Id].IsValid)
+            {
+                Debug.LogError($"Overriding address on a valid item!");
+            }
+            m_slotContentMap[slot.Id] = item;
+            m_addressMap[item.Id] = slot;
             m_itemManager.SetAddress(ref item, in slot);
         }
 
         public Item GetItemAtSlot(in Slot slot)
         {
-            return m_addressMap[slot.Id];
+            return m_slotContentMap[slot.Id];
         }
         
         public Item GetItemAtSlot(int slotIndex)
         {
-            return m_addressMap[slotIndex];
+            return m_slotContentMap[slotIndex];
         }
 
-        public void ClearAddress(in Slot slot)
+        public int GetItemAddressAsIndex(in Item item)
         {
-            m_addressMap[slot.Id] = default;
+            return m_addressMap[item.Id].Id;
+        }
+        
+        public Slot GetItemAddressAsSlot(in Item item)
+        {
+            return m_addressMap[item.Id];
+        }
+        
+        public ItemIterator GetItemIterator()
+        {
+            return new ItemIterator(m_slotContentMap);
+        }
+
+        public void ClearSlot(in Slot slot)
+        {
+            // Debug.LogError($"Clear address {slot.Id.GetCoordinates(Config.Dimensions.x)}");
+            Debug.LogError($"Clear address {slot.Id}");
+            m_slotContentMap[slot.Id] = default;
+        }
+
+        public void ClearAddress(in Item item)
+        {
+            if (item.IsValid && m_addressMap.ContainsKey(item.Id))
+            {
+                m_addressMap.Remove(item.Id);
+            }
+        }
+
+        [Button]
+        public void DebugAddresses()
+        {
+            foreach (var kv in m_addressMap)
+            {
+                Debug.Log($"{kv.Key} - {kv.Value.Id}");
+            }
+        }
+        
+        [Button]
+        public void DebugSlotContents()
+        {
+            foreach (var kv in m_slotContentMap)
+            {
+                Debug.Log($"{kv.Key} - {kv.Value.Id} : {kv.Value.TemplateId}");
+            }
         }
     }
 

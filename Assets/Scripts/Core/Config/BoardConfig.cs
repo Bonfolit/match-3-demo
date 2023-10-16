@@ -8,6 +8,7 @@ namespace Core.Config
     {
         public Vector2Int Dimensions;
         public Vector2 Offset;
+        public bool[] SpawnColumns;
     }
 
 }

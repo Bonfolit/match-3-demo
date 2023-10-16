@@ -75,6 +75,8 @@ namespace Core.Runtime.Managers
             while (continueCascade && cascadeCount < CASCADE_LIMIT)
             {
                 cascadeCount++;
+
+                Debug.LogWarning($"Cascade iteration {cascadeCount}");
                 
                 var appliedGravity = await m_gravityManager.TryApplyGravity();
 

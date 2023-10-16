@@ -56,11 +56,14 @@ namespace Core.Runtime.Managers
             for (int i = 0; i < moveCommands.Count; i++)
             {
                 var command = moveCommands[i];
-                var targetSlot = m_slotManager.GetSlot(command.ToIndex);
+                // var originSlot = m_slotManager.GetSlot(command.FromIndex);
+                // var targetSlot = m_slotManager.GetSlot(command.ToIndex);
+                var originSlot = new Slot(command.FromIndex);
+                var targetSlot = new Slot(command.ToIndex);
                 var coords = command.ToIndex.GetCoordinates(boardState.Width);
                 var delay = coords.y * Config.DelayPerRow;
 
-                var task = ApplyGravity(command.Item, targetSlot, delay);
+                var task = ApplyGravity(command.Item, originSlot, targetSlot, delay);
                 tasks[i] = task;
             }
 
@@ -69,10 +72,12 @@ namespace Core.Runtime.Managers
             return true;
         }
         
-        public async Task ApplyGravity(Item item, Slot slot, float delay)
+        public async Task ApplyGravity(Item item, Slot originSlot, Slot targetSlot, float delay)
         {
-            var origin = m_boardManager.GetWorldPosition(item.Address.Slot.Id);
-            var destination = m_boardManager.GetWorldPosition(slot.Id);
+            var origin = m_boardManager.GetWorldPosition(originSlot.Id);
+            var destination = m_boardManager.GetWorldPosition(targetSlot.Id);
+
+            Debug.Log($"Apply gravity for item {item.Id} from {originSlot.Id} to {targetSlot.Id}");
 
             var dist = Vector3.Distance(origin, destination);
 
@@ -80,12 +85,11 @@ namespace Core.Runtime.Managers
 
             var poolTransform = ((PoolObject)m_graphicManager.GetItemGraphic(in item).Target).transform;
 
-            // poolTransform.DOJump(destination, 0, 0, duration)
-            //     .SetDelay(delay);
-
             poolTransform.DOMove(destination, duration).SetDelay(delay).SetEase(Ease.InQuad);
-            
-            m_boardManager.SetAddress(ref item, in slot);
+
+            m_boardManager.ClearSlot(in originSlot);
+            m_boardManager.ClearAddress(in item);
+            m_boardManager.SetAddress(ref item, in targetSlot);
 
             await Task.Delay((int)((duration + delay) * 1000f));
         }
@@ -150,6 +154,9 @@ namespace Core.Runtime.Managers
 
             for (int i = 0; i < boardState.Width; i++)
             {
+                if (!m_boardManager.IsSpawnColumn(i))
+                    continue;
+                
                 var gapCount = gapCounts[i];
                 
                 if (gapCount == 0)
@@ -158,7 +165,6 @@ namespace Core.Runtime.Managers
                 for (int j = 0; j < gapCount; j++)
                 {
                     var createIndex = i + (boardState.Height + j) * boardState.Width;
-                    // var targetIndex = createIndex - (j + 1) * boardState.Width;
                     var targetIndex = i + (boardState.Height + j - gapCount) * boardState.Width;
                     var templateId = m_itemManager.GetRandomTemplateId();
             

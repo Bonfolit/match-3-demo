@@ -14,7 +14,7 @@ namespace Core.Runtime.Items
         {
             m_templates = new Dictionary<int, ItemTemplate>(capacity);
 
-            m_counter = 0;
+            m_counter = 1000;
         }
 
 

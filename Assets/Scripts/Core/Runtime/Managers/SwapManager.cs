@@ -50,6 +50,9 @@ namespace Core.Runtime.Managers
             var fromItem = m_boardManager.GetItemAtSlot(in fromSlot);
             var toItem = m_boardManager.GetItemAtSlot(in toSlot);
 
+            if (!fromItem.IsValid || !toItem.IsValid)
+                return;
+
             matchState.TemplateIds[fromSlot.Id] = toItem.TemplateId;
             matchState.TemplateIds[toSlot.Id] = fromItem.TemplateId;
 
@@ -86,8 +89,13 @@ namespace Core.Runtime.Managers
             
             await Task.Delay((int)(duration * 1000f));
             
-            m_boardManager.SetAddress(ref fromItem, toSlot);
-            m_boardManager.SetAddress(ref toItem, fromSlot);
+            m_boardManager.ClearAddress(in fromItem);
+            m_boardManager.ClearSlot(in fromSlot);
+            m_boardManager.ClearAddress(in toItem);
+            m_boardManager.ClearSlot(in toSlot);
+            
+            m_boardManager.SetAddress(ref fromItem, in toSlot);
+            m_boardManager.SetAddress(ref toItem, in fromSlot);
 
             var cascadeEvt = new TriggerCascadeEvent();
             EventManager.SendEvent(ref cascadeEvt);

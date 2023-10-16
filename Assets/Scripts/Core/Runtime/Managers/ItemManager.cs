@@ -143,7 +143,7 @@ namespace Core.Runtime.Managers
 
         public void SetAddress(ref Item item, in Slot slot)
         {
-            item.m_address.Slot = slot;
+            item.SetAddress(in slot);
             m_itemMap[item.Id] = item;
         }
 
