@@ -28,7 +28,6 @@ namespace Core.Runtime.Items
             // var template = m_templates[templateId];
 
             var item = new Item(GenerateId(), templateId);
-            Debug.Log($"Create Item {item.Id}");
 
             return item;
         }

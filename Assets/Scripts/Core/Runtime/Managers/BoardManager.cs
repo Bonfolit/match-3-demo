@@ -71,6 +71,7 @@ namespace Core.Runtime.Managers
         public void OnEventReceived(ref DestroyItemEvent evt)
         {
             ClearSlot(evt.Slot);
+            ClearAddress(in evt.Item);
         }
 
         public MatchState GenerateNewMatchState(in int[] templateIds)
@@ -163,8 +164,6 @@ namespace Core.Runtime.Managers
 
         public void SetAddress(ref Item item, in Slot slot)
         {
-            // Debug.LogError($"Set address {slot.Id.GetCoordinates(Config.Dimensions.x)}");
-            Debug.LogError($"Set address {slot.Id}");
             if (m_slotContentMap.ContainsKey(slot.Id) && m_slotContentMap[slot.Id].IsValid)
             {
                 Debug.LogError($"Overriding address on a valid item!");
@@ -184,6 +183,19 @@ namespace Core.Runtime.Managers
             return m_slotContentMap[slotIndex];
         }
 
+        public void SwapSlots(in Slot slot1, in Slot slot2)
+        {
+            var item1 = GetItemAtSlot(in slot1);
+            var item2 = GetItemAtSlot(in slot2);
+            ClearAddress(in item1);
+            ClearSlot(in slot1);
+            ClearAddress(in item2);
+            ClearSlot(in slot2);
+            
+            SetAddress(ref item1, in slot2);
+            SetAddress(ref item2, in slot1);
+        }
+
         public int GetItemAddressAsIndex(in Item item)
         {
             return m_addressMap[item.Id].Id;
@@ -201,8 +213,6 @@ namespace Core.Runtime.Managers
 
         public void ClearSlot(in Slot slot)
         {
-            // Debug.LogError($"Clear address {slot.Id.GetCoordinates(Config.Dimensions.x)}");
-            Debug.LogError($"Clear address {slot.Id}");
             m_slotContentMap[slot.Id] = default;
         }
 

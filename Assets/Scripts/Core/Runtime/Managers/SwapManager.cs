@@ -89,13 +89,7 @@ namespace Core.Runtime.Managers
             
             await Task.Delay((int)(duration * 1000f));
             
-            m_boardManager.ClearAddress(in fromItem);
-            m_boardManager.ClearSlot(in fromSlot);
-            m_boardManager.ClearAddress(in toItem);
-            m_boardManager.ClearSlot(in toSlot);
-            
-            m_boardManager.SetAddress(ref fromItem, in toSlot);
-            m_boardManager.SetAddress(ref toItem, in fromSlot);
+            m_boardManager.SwapSlots(in fromSlot, in toSlot);
 
             var cascadeEvt = new TriggerCascadeEvent();
             EventManager.SendEvent(ref cascadeEvt);

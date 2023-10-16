@@ -131,7 +131,6 @@ namespace Core.Runtime.Managers
 
         public void DestroyItem(in Item item)
         {
-            Debug.Log($"Destroy item {item.Id}");
             m_graphicManager.DestroyItemGraphic(in item);
             m_itemMap.Remove(item.Id);
         }

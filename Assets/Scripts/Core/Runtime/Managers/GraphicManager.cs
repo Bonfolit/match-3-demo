@@ -92,8 +92,6 @@ namespace Core.Runtime.Managers
 
         public void DisposeHandle(in GraphicHandle handle)
         {
-            Debug.Log($"Dispose Graphic Handle {handle.Id}");
-
             m_graphicMap.Remove(handle.Id);
         }
 

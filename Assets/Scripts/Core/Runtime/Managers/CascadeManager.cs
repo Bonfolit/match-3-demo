@@ -68,7 +68,7 @@ namespace Core.Runtime.Managers
         [Button]
         public async Task TriggerCascade()
         {
-            const int CASCADE_LIMIT = 1000;
+            const int CASCADE_LIMIT = 100;
             var cascadeCount = 0;
             var continueCascade = true;
 
@@ -76,7 +76,7 @@ namespace Core.Runtime.Managers
             {
                 cascadeCount++;
 
-                Debug.LogWarning($"Cascade iteration {cascadeCount}");
+                Debug.Log($"Cascade iteration {cascadeCount}");
                 
                 var appliedGravity = await m_gravityManager.TryApplyGravity();
 
@@ -108,6 +108,11 @@ namespace Core.Runtime.Managers
                 }
 
                 continueCascade = appliedGravity || hasMatches;
+            }
+
+            if (cascadeCount == CASCADE_LIMIT)
+            {
+                Debug.LogWarning("Reached cascade limit!");
             }
         }
     }

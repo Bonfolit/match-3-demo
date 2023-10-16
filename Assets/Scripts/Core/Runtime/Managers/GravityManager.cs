@@ -77,15 +77,13 @@ namespace Core.Runtime.Managers
             var origin = m_boardManager.GetWorldPosition(originSlot.Id);
             var destination = m_boardManager.GetWorldPosition(targetSlot.Id);
 
-            Debug.Log($"Apply gravity for item {item.Id} from {originSlot.Id} to {targetSlot.Id}");
-
             var dist = Vector3.Distance(origin, destination);
 
             var duration = Mathf.Sqrt(2 * (dist / Config.Acceleration));
 
             var poolTransform = ((PoolObject)m_graphicManager.GetItemGraphic(in item).Target).transform;
 
-            poolTransform.DOMove(destination, duration).SetDelay(delay).SetEase(Ease.InQuad);
+            poolTransform.DOMove(destination, duration).SetDelay(delay).SetEase(Config.DropEase);
 
             m_boardManager.ClearSlot(in originSlot);
             m_boardManager.ClearAddress(in item);
@@ -176,8 +174,6 @@ namespace Core.Runtime.Managers
 
                     var createCoords = createIndex.GetCoordinates(boardState.Width);
                     var targetCoords = targetIndex.GetCoordinates(boardState.Width);
-                    Debug.Log($"Spawn item {item.Id} of template {item.TemplateId} at {createCoords.x} - {createCoords.y}, then move to {targetCoords.x} - {targetCoords.y}");
-            
             
                     var moveCommand = new MoveCommand(createIndex, targetIndex, item);
                     moveCommands.Add(moveCommand);

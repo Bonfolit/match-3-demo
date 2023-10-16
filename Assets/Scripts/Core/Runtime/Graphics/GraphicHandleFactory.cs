@@ -16,7 +16,6 @@ namespace Core.Runtime.Graphics
         public GraphicHandle Create()
         {
             var handle = new GraphicHandle(GenerateId());
-            Debug.Log($"Create Graphic Handle {handle.Id}");
             return handle;
         }
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DG.Tweening;
+using UnityEngine;
 
 namespace Core.Config
 {
@@ -7,6 +8,7 @@ namespace Core.Config
     {
         public float Acceleration;
         public float DelayPerRow;
+        public Ease DropEase;
     }
 
 }
