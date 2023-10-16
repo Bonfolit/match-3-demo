@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e201cdca12cb4c79a1d980886f509d5b, type: 3}
   m_Name: CascadeConfig
   m_EditorClassIdentifier: 
-  DestroyDuration: 0.1
-  DestroyEase: 1
+  DestroyDuration: 0.07
+  DestroyEase: 5
